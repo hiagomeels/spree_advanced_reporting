@@ -1,14 +1,14 @@
 class Spree::AdvancedReport::GeoReport::GeoRevenue < Spree::AdvancedReport::GeoReport
   def name
-    "Revenue by Geography"
+    I18n.t("adv_report.geo_report.revenue.name")
   end
 
   def column
-    "Revenue"
+    I18n.t("adv_report.geo_report.revenue.column")
   end
 
   def description
-    "Revenue divided geographically, into states and countries"
+    I18n.t("adv_report.geo_report.revenue.description")
   end
 
   def initialize(params)
@@ -19,26 +19,26 @@ class Spree::AdvancedReport::GeoReport::GeoRevenue < Spree::AdvancedReport::GeoR
       revenue = revenue(order)
       if order.bill_address.state
         data[:state][order.bill_address.state_id] ||= {
-          :name => order.bill_address.state.name,
-          :revenue => 0
+            :name => order.bill_address.state.name,
+            :revenue => 0
         }
         data[:state][order.bill_address.state_id][:revenue] += revenue
       end
       if order.bill_address.country
         data[:country][order.bill_address.country_id] ||= {
-          :name => order.bill_address.country.name,
-          :revenue => 0
+            :name => order.bill_address.country.name,
+            :revenue => 0
         }
         data[:country][order.bill_address.country_id][:revenue] += revenue
       end
     end
 
     [:state, :country].each do |type|
-      ruportdata[type] = Table(%w[location Revenue])
-      data[type].each { |k, v| ruportdata[type] << { "location" => v[:name], "Revenue" => v[:revenue] } }
-      ruportdata[type].sort_rows_by!(["Revenue"], :order => :descending)
+      ruportdata[type] = Table(I18n.t("adv_report.geo_report.revenue.table"))
+      data[type].each { |k, v| ruportdata[type] << { "location" => v[:name], I18n.t("adv_report.revenue") => v[:revenue] } }
+      ruportdata[type].sort_rows_by!([I18n.t("adv_report.revenue")], :order => :descending)
       ruportdata[type].rename_column("location", type.to_s.capitalize)
-      ruportdata[type].replace_column("Revenue") { |r| "$%0.2f" % r.Revenue }
+      ruportdata[type].replace_column(I18n.t("adv_report.revenue")) { |r| "$%0.2f" % r.send(I18n.t("adv_report.revenue")) }
     end
   end
 end

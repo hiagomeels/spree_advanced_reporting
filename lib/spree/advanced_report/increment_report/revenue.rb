@@ -1,14 +1,14 @@
 class Spree::AdvancedReport::IncrementReport::Revenue < Spree::AdvancedReport::IncrementReport
   def name
-    "Revenue"
+    I18n.t("adv_report.increment_report.revenue.name")
   end
 
   def column
-    "Revenue"
+    I18n.t("adv_report.increment_report.revenue.column")
   end
 
   def description
-    "The sum of order item prices, excluding shipping and tax"
+    I18n.t("adv_report.increment_report.revenue.description")
   end
 
   def initialize(params)

@@ -1,16 +1,15 @@
 class Spree::AdvancedReport::GeoReport::GeoUnits < Spree::AdvancedReport::GeoReport
   def name
-    "Units Sold by Geography"
+    I18n.t("adv_report.geo_report.units.name")
   end
 
   def column
-    "Units"
+    I18n.t("adv_report.geo_report.units.column")
   end
 
   def description
-    "Unit sales divided geographically, into states and countries"
+    I18n.t("adv_report.geo_report.units.description")
   end
-
   def initialize(params)
     super(params)
 
@@ -19,24 +18,24 @@ class Spree::AdvancedReport::GeoReport::GeoUnits < Spree::AdvancedReport::GeoRep
       units = units(order)
       if order.bill_address.state
         data[:state][order.bill_address.state_id] ||= {
-          :name => order.bill_address.state.name,
-          :units => 0
+            :name => order.bill_address.state.name,
+            :units => 0
         }
         data[:state][order.bill_address.state_id][:units] += units
       end
       if order.bill_address.country
         data[:country][order.bill_address.country_id] ||= {
-          :name => order.bill_address.country.name,
-          :units => 0
+            :name => order.bill_address.country.name,
+            :units => 0
         }
         data[:country][order.bill_address.country_id][:units] += units
       end
     end
 
     [:state, :country].each do |type|
-      ruportdata[type] = Table(%w[location Units])
-      data[type].each { |k, v| ruportdata[type] << { "location" => v[:name], "Units" => v[:units] } }
-      ruportdata[type].sort_rows_by!(["Units"], :order => :descending)
+      ruportdata[type] = Table(I18n.t("adv_report.geo_report.units.table"))
+      data[type].each { |k, v| ruportdata[type] << { "location" => v[:name], I18n.t("adv_report.units") => v[:units] } }
+      ruportdata[type].sort_rows_by!([I18n.t("adv_report.units")], :order => :descending)
       ruportdata[type].rename_column("location", type.to_s.capitalize)
     end
   end

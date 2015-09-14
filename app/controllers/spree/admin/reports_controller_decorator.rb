@@ -1,6 +1,7 @@
 Spree::Admin::ReportsController.class_eval do
   before_filter :add_own
-  before_filter :basic_report_setup, :actions => [:daily_details, :profit, :revenue, :units, :top_products, :top_customers, :geo_revenue, :geo_units, :count]
+  # before_filter :basic_report_setup, :actions => [:daily_details, :profit, :revenue, :units, :top_products, :top_customers, :geo_revenue, :geo_units, :count]
+  before_filter :basic_report_setup, :actions => [:daily_details, :top_products, :top_customers, :geo_revenue, :geo_units]
 
   def add_own
     return if Spree::Admin::ReportsController::available_reports.has_key?(:geo_profit)
@@ -10,10 +11,9 @@ Spree::Admin::ReportsController.class_eval do
   I18n.reload!
 
   ADVANCED_REPORTS ||= {}
-  [ :daily_details, :revenue, :units, :profit, :count, :top_products, :top_customers, :geo_revenue, :geo_units, :geo_profit].each do |x|
+  [ :daily_details, :top_products, :top_customers, :geo_revenue, :geo_units, :geo_profit].each do |x|
     ADVANCED_REPORTS[x]= {name: I18n.t("adv_report."+x.to_s), :description => I18n.t("adv_report."+x.to_s)}
   end
-
 
   def basic_report_setup
     @reports = ADVANCED_REPORTS
@@ -54,16 +54,9 @@ Spree::Admin::ReportsController.class_eval do
   def base_report_render(filename)
     params[:advanced_reporting] ||= {}
     params[:advanced_reporting]["report_type"] = params[:advanced_reporting]["report_type"].to_sym if params[:advanced_reporting]["report_type"]
-    params[:advanced_reporting]["report_type"] ||= :daily
+    params[:advanced_reporting]["report_type"] ||= I18n.t("adv_report.daily").downcase.to_sym
     respond_to do |format|
       format.html { render :template => "spree/admin/reports/increment_base" }
-      # format.pdf do
-      #   if params[:advanced_reporting]["report_type"] == :all
-      #     send_data @report.all_data.to_pdf
-      #   else
-      #     send_data @report.ruportdata[params[:advanced_reporting]["report_type"]].to_pdf
-      #   end
-      # end
       format.csv do
         if params[:advanced_reporting]["report_type"] == :all
           send_data @report.all_data.to_csv
@@ -74,30 +67,30 @@ Spree::Admin::ReportsController.class_eval do
     end
   end
 
-  def revenue
-    @report = Spree::AdvancedReport::IncrementReport::Revenue.new(params)
-    base_report_render("revenue")
-  end
-
-  def units
-    @report = Spree::AdvancedReport::IncrementReport::Units.new(params)
-    base_report_render("units")
-  end
+  # def revenue
+  #   @report = Spree::AdvancedReport::IncrementReport::Revenue.new(params)
+  #   base_report_render("revenue")
+  # end
+  #
+  # def units
+  #   @report = Spree::AdvancedReport::IncrementReport::Units.new(params)
+  #   base_report_render("units")
+  # end
 
   def daily_details
     @report = Spree::AdvancedReport::DailyDetailsReport.new(params)
     render :template => 'spree/admin/reports/daily_details'
   end
-
-  def profit
-    @report = Spree::AdvancedReport::IncrementReport::Profit.new(params)
-    base_report_render("profit")
-  end
-
-  def count
-    @report = Spree::AdvancedReport::IncrementReport::Count.new(params)
-    base_report_render("profit")
-  end
+  #
+  # def profit
+  #   @report = Spree::AdvancedReport::IncrementReport::Profit.new(params)
+  #   base_report_render("profit")
+  # end
+  #
+  # def count
+  #   @report = Spree::AdvancedReport::IncrementReport::Count.new(params)
+  #   base_report_render("profit")
+  # end
 
   def top_products
     @report = Spree::AdvancedReport::TopReport::TopProducts.new(params, 4)
@@ -123,4 +116,11 @@ Spree::Admin::ReportsController.class_eval do
     @report = Spree::AdvancedReport::GeoReport::GeoProfit.new(params)
     geo_report_render("geo_profit")
   end
+
+  private
+  def region
+    @region ||= Spree::Country.default.iso
+  end
+
+  helper_method :region
 end

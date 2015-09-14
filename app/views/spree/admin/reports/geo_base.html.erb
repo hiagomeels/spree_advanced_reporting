@@ -10,26 +10,26 @@
   <% Spree.t(:report_details) %>
 <% end %>
 
-<% content_for :sidebar do %>
-  <nav class="menu">
-    <ul class="show_data">
-      <%= content_tag :li do %>
-        <%= raw @report.taxon_text %>
-      <% end %>
-      <%= content_tag :li do %>
-        <%= raw @report.product_text %>
-      <% end %>
-      <%= content_tag :li, 'state' do %>
-        <label>States</label><br />
-        <a href="<%= @report.download_url(request.fullpath, 'csv', "state") %>">CSV</a>
-      <% end %>
-      <%= content_tag :li, id: 'country' do %>
-        <label>Countries</label><br />
-        <a href="<%= @report.download_url(request.fullpath, 'csv', "country") %>">CSV</a>
-      <% end %>
+<% content_for :sidebar do -%>
+    <div class="report_details">
+      <h1><%=t "adv_report." + @report.name.downcase %></h1>
+      <p><%= @report.description %></p>
+      <%= @report.taxon_text %>
+      <%= @report.product_text %>
     </div>
-  </nav>
-<% end %>
+
+    <ul id="show_data">
+      <li id="state">
+        <label><%= t("adv_report.states") %></label><br />
+        <%= link_to "CSV", @report.download_url(request.fullpath, 'csv', "state") %>
+      </li>
+      <li id="country">
+        <label><%= t("adv_report.countries") %></label><br />
+        <%= link_to "CSV", @report.download_url(request.fullpath, 'csv', "country") %>
+      </li>
+    </ul>
+    <%= render :partial => 'spree/admin/reports/advanced_report_criteria', :locals => {} %>
+<% end -%>
 
 <% content_for :head do %>
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
@@ -52,7 +52,7 @@
 
           var options_<%= type.to_s %> = { 'width' : '800px', 'height' : '500px' };
         <% if type == :state %>
-          options_<%= type.to_s %>['region'] = 'US';
+          options_<%= type.to_s %>['region'] = '<%= region %>';
         <% end %>
 
         var <%= type.to_s %>_container = document.getElementById('<%= type.to_s %>_canvas');

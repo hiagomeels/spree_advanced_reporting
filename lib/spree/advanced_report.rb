@@ -4,11 +4,11 @@ module Spree
     attr_accessor :orders, :product_text, :date_text, :taxon_text, :ruportdata, :data, :params, :taxon, :product, :product_in_taxon, :unfiltered_params
 
     def name
-      "Base Advanced Report"
+      I18n.t("adv_report.base.name")
     end
 
     def description
-      "Base Advanced Report"
+      I18n.t("adv_report.base.description")
     end
 
     def initialize(params)
